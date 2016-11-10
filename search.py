@@ -73,6 +73,9 @@ def tinyMazeSearch(problem):
     return  [s, s, w, s, w, w, s, w]
 
 def depthFirstSearch(problem):
+    from game import Directions
+    s = Directions.SOUTH
+    w = Directions.WEST
     """
     Search the deepest nodes in the search tree first.
 
@@ -87,7 +90,64 @@ def depthFirstSearch(problem):
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    startState = problem.getStartState()
+    visited = {}
+    dir = "None"
+
+    stack = recursiveDfs(problem, startState, dir, visited)
+
+    directions = []
+    while not stack.isEmpty():
+        item = stack.pop()
+        print "Direction : ", item
+        directions.append(item)
+
+    return directions
+
+def recursiveDfs(problem, state, dir, visited):
+    sta = util.Stack()
+    sta.__init__()
+
+    if problem.isGoalState(state):
+        print "Goal State : ", state
+        str = convertDirection(dir)
+        sta.push(str)
+        return sta
+
+    if visited.has_key(state):
+        print "Visited : ", state
+        return sta
+
+    for newLocation in problem.getSuccessors(state):
+        nextState,Dir,Cost = newLocation
+        visited[state] = True
+
+        stack = recursiveDfs(problem,nextState, Dir, visited)
+
+        if not stack.isEmpty():
+            print "Stack not empty :", state
+            print "Stack : ", stack
+            str = convertDirection(dir)
+            stack.push(str)
+            return stack
+
+    return sta
+
+def convertDirection(dir):
+    from game import Directions
+    s = Directions.SOUTH
+    w = Directions.WEST
+    e = Directions.EAST
+    n = Directions.NORTH
+    none = Directions.STOP
+
+    return {
+        'South': s,
+        'East': e,
+        'West': w,
+        'North': n,
+        'None': none
+    }[dir]
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
