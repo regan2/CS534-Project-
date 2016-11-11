@@ -99,7 +99,6 @@ def depthFirstSearch(problem):
     directions = []
     while not stack.isEmpty():
         item = stack.pop()
-        print "Direction : ", item
         directions.append(item)
 
     return directions
@@ -109,13 +108,11 @@ def recursiveDfs(problem, state, dir, visited):
     sta.__init__()
 
     if problem.isGoalState(state):
-        print "Goal State : ", state
         str = convertDirection(dir)
         sta.push(str)
         return sta
 
     if visited.has_key(state):
-        print "Visited : ", state
         return sta
 
     for newLocation in problem.getSuccessors(state):
@@ -125,8 +122,6 @@ def recursiveDfs(problem, state, dir, visited):
         stack = recursiveDfs(problem,nextState, Dir, visited)
 
         if not stack.isEmpty():
-            print "Stack not empty :", state
-            print "Stack : ", stack
             str = convertDirection(dir)
             stack.push(str)
             return stack
