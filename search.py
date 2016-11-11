@@ -164,17 +164,16 @@ def nullHeuristic(state, problem=None):
 
 
 class node:
-    def __init__(self, state, h, g, action = None, pred=None):
+    def __init__(self, state, h, g, action = None, pred = None):
         self.state = state
         self.pred = pred
         self.action = action
         self.g = g
-        # h is a function on the nodes, g is just total path cost
         self.h = h
 
     def Solution(self):
         solution = [self.action]
-        if(self.pred!=None and self.pred.action != None):
+        if(self.pred != None and self.pred.action != None):
             solution += self.pred.Solution()
         return solution
 
@@ -186,30 +185,28 @@ class node:
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
     actions = []
     frontier = util.PriorityQueueWithFunction(lambda x: x.h+x.g)
-    curr_state = node((problem.getStartState(),None, None),heuristic(problem.getStartState(), problem),0)
-    frontier.push(curr_state)#, curr_state.h + 0) # put a real priority here, h+g
+    curr_state = node((problem.getStartState(), None, None), heuristic(problem.getStartState(), problem), 0)
+    frontier.push(curr_state) 
     explored = []
     while True:
         if(frontier.isEmpty()):
-            return []#failure
+            return [] #failure
         curr_node = frontier.pop()
         #print curr_node.h
         if(problem.isGoalState(curr_node.state[0])):
             ans_list = curr_node.Solution()
             ans_list.reverse()
             return ans_list
-        for w in problem.getSuccessors(curr_node.state[0]):
-            if(w[0] in explored):
+        for suc in problem.getSuccessors(curr_node.state[0]):
+            if(suc[0] in explored):
                 continue
-            explored.append(w[0])
+            explored.append(suc[0])
             #print explored
-            new_node = node(w,heuristic(w[0], problem), w[2] + curr_node.g, w[1], curr_node)
-            frontier.push(new_node)
-            #frontier.update(new_node,new_node.g + new_node.h) ## update vs push?
-
+            suc_node = node(suc, heuristic(suc[0], problem), suc[2] + curr_node.g, suc[1], curr_node)
+            frontier.push(suc_node)
+            #frontier.update(suc_node,suc_node.g + suc_node.h) ## update vs push?
 
             # write new function to check if in heap.state[0]?
 
@@ -230,12 +227,6 @@ def aStarSearch(problem, heuristic=nullHeuristic):
             elif(is_in_queue(child.state,frontier)):
                 check_and_replace(child,frontier)
 """
-
-
-    ##for x in problem.getSuccessors(curr_state):
-     ##   actions.append(x)
-    ##return map(lambda x: x[1], actions)
-    ##util.raiseNotDefined()
 
 
 # Abbreviations
