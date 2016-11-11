@@ -161,10 +161,81 @@ def nullHeuristic(state, problem=None):
     """
     return 0
 
+
+
+class node:
+    def __init__(self, state, h, g, action = None, pred=None):
+        self.state = state
+        self.pred = pred
+        self.action = action
+        self.g = g
+        # h is a function on the nodes, g is just total path cost
+        self.h = h
+
+    def Solution(self):
+        solution = [self.action]
+        if(self.pred!=None and self.pred.action != None):
+            solution += self.pred.Solution()
+        return solution
+
+#def manhattanHeuristic(position, problem, info={}):
+#    "The Manhattan distance heuristic for a PositionSearchProblem"
+#    xy1 = position
+#    xy2 = problem.goal
+#    return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
+
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    actions = []
+    frontier = util.PriorityQueueWithFunction(lambda x: x.h+x.g)
+    curr_state = node((problem.getStartState(),None, None),heuristic(problem.getStartState(), problem),0)
+    frontier.push(curr_state)#, curr_state.h + 0) # put a real priority here, h+g
+    explored = []
+    while True:
+        if(frontier.isEmpty()):
+            return []#failure
+        curr_node = frontier.pop()
+        #print curr_node.h
+        if(problem.isGoalState(curr_node.state[0])):
+            ans_list = curr_node.Solution()
+            ans_list.reverse()
+            return ans_list
+        for w in problem.getSuccessors(curr_node.state[0]):
+            if(w[0] in explored):
+                continue
+            explored.append(w[0])
+            #print explored
+            new_node = node(w,heuristic(w[0], problem), w[2] + curr_node.g, w[1], curr_node)
+            frontier.push(new_node)
+            #frontier.update(new_node,new_node.g + new_node.h) ## update vs push?
+
+
+            # write new function to check if in heap.state[0]?
+
+
+"""  old Astar:
+    while True:
+        if(frontier.empty()):
+            return failure
+        curr_node = frontier.get()
+        if (curr_node.state==problem.goal):
+            return curr_node.Solution()
+        # take the list of possible states and costs rather than actions, but basically same thing
+        for w in problem.actions(curr_node.state):
+            [new_state,cost] = [w[0], w[1]]
+            child = curr_node.Child_node(new_state,cost)
+            if(child.state not in explored and not is_in_queue(child.state,frontier)):
+                frontier.put(child)
+            elif(is_in_queue(child.state,frontier)):
+                check_and_replace(child,frontier)
+"""
+
+
+    ##for x in problem.getSuccessors(curr_state):
+     ##   actions.append(x)
+    ##return map(lambda x: x[1], actions)
+    ##util.raiseNotDefined()
 
 
 # Abbreviations
