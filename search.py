@@ -23,7 +23,6 @@ class SearchProblem:
     """
     This class outlines the structure of a search problem, but doesn't implement
     any of the methods (in object-oriented terminology: an abstract class).
-
     You do not need to change anything in this class, ever.
     """
 
@@ -36,7 +35,6 @@ class SearchProblem:
     def isGoalState(self, state):
         """
           state: Search state
-
         Returns True if and only if the state is a valid goal state.
         """
         util.raiseNotDefined()
@@ -44,7 +42,6 @@ class SearchProblem:
     def getSuccessors(self, state):
         """
           state: Search state
-
         For a given state, this should return a list of triples, (successor,
         action, stepCost), where 'successor' is a successor to the current
         state, 'action' is the action required to get there, and 'stepCost' is
@@ -55,7 +52,6 @@ class SearchProblem:
     def getCostOfActions(self, actions):
         """
          actions: A list of actions to take
-
         This method returns the total cost of a particular sequence of actions.
         The sequence must be composed of legal moves.
         """
@@ -78,13 +74,10 @@ def depthFirstSearch(problem):
     w = Directions.WEST
     """
     Search the deepest nodes in the search tree first.
-
     Your search algorithm needs to return a list of actions that reaches the
     goal. Make sure to implement a graph search algorithm.
-
     To get started, you might want to try some of these simple commands to
     understand the search problem that is being passed in:
-
     print "Start:", problem.getStartState()
     print "Is the start a goal?", problem.isGoalState(problem.getStartState())
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
@@ -144,10 +137,70 @@ def convertDirection(dir):
         'None': none
     }[dir]
 
+class bfs_node:
+   def __init__(self, state, action = None, pred=None):
+       self.state = state
+       self.pred = pred
+       self.action = action
+
+
+   def Solution(self):
+       solution = [self.action]
+       if(self.pred!=None and self.pred.action != None):
+           solution += self.pred.Solution()
+       return solution
+'''
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    currentstate = problem.getStartState()
+    currentnode = bfs_node(currentstate)
+    if problem.isGoalState(problem.getStartState()):
+        return []
+    open = [currentnode]
+    closed = []
+    while len(open) != 0:
+        n = open.pop(0)
+        closed.append(n.state)
+        successors = map(lambda x: bfs_node(x[0], x[1], n), problem.getSuccessors(n.state))
+        print successors
+        for suc in successors:
+            if suc.state not in closed:
+                if problem.isGoalState(suc.state):
+                    path = suc.Solution()
+                    path.reverse()
+                    print path
+                    return path
+
+                open.append(suc)
+    return
+'''
+
+def breadthFirstSearch(problem):
+    """Search the shallowest nodes in the search tree first."""
+    sta = util.Stack()
+    sta.__init__()
+    startState = problem.getStartState()
+
+    currentnode = bfs_node(startState)
+    if problem.isGoalState(problem.getStartState()):
+        return []
+    sta.push(currentnode)
+    closed = []
+    while not sta.isEmpty():
+        n = sta.pop()
+        closed.append(n.state)
+        successors = map(lambda x: bfs_node(x[0], x[1], n), problem.getSuccessors(n.state))
+        #print successors
+        for suc in successors:
+            if suc.state not in closed:
+                if problem.isGoalState(suc.state):
+                    path = suc.Solution()
+                    path.reverse()
+                    #print path
+                    return path
+
+                sta.push(suc)
+    return
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
@@ -161,10 +214,8 @@ def nullHeuristic(state, problem=None):
     """
     return 0
 
-
-
 class node:
-    def __init__(self, state, h, g, action = None, pred = None):
+    def __init__(self, state, h, g, action=None, pred=None):
         self.state = state
         self.pred = pred
         self.action = action
@@ -173,11 +224,11 @@ class node:
 
     def Solution(self):
         solution = [self.action]
-        if(self.pred != None and self.pred.action != None):
+        if (self.pred != None and self.pred.action != None):
             solution += self.pred.Solution()
         return solution
 
-#def manhattanHeuristic(position, problem, info={}):
+# def manhattanHeuristic(position, problem, info={}):
 #    "The Manhattan distance heuristic for a PositionSearchProblem"
 #    xy1 = position
 #    xy2 = problem.goal
@@ -186,30 +237,29 @@ class node:
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     actions = []
-    frontier = util.PriorityQueueWithFunction(lambda x: x.h+x.g)
+    frontier = util.PriorityQueueWithFunction(lambda x: x.h + x.g)
     curr_state = node((problem.getStartState(), None, None), heuristic(problem.getStartState(), problem), 0)
-    frontier.push(curr_state) 
+    frontier.push(curr_state)
     explored = []
     while True:
-        if(frontier.isEmpty()):
-            return [] #failure
+        if (frontier.isEmpty()):
+            return []  # failure
         curr_node = frontier.pop()
-        #print curr_node.h
-        if(problem.isGoalState(curr_node.state[0])):
+        # print curr_node.h
+        if (problem.isGoalState(curr_node.state[0])):
             ans_list = curr_node.Solution()
             ans_list.reverse()
             return ans_list
         for suc in problem.getSuccessors(curr_node.state[0]):
-            if(suc[0] in explored):
+            if (suc[0] in explored):
                 continue
             explored.append(suc[0])
-            #print explored
+            # print explored
             suc_node = node(suc, heuristic(suc[0], problem), suc[2] + curr_node.g, suc[1], curr_node)
             frontier.push(suc_node)
-            #frontier.update(suc_node,suc_node.g + suc_node.h) ## update vs push?
+            # frontier.update(suc_node,suc_node.g + suc_node.h) ## update vs push?
 
             # write new function to check if in heap.state[0]?
-
 
 """  old Astar:
     while True:
@@ -227,7 +277,6 @@ def aStarSearch(problem, heuristic=nullHeuristic):
             elif(is_in_queue(child.state,frontier)):
                 check_and_replace(child,frontier)
 """
-
 
 # Abbreviations
 bfs = breadthFirstSearch
