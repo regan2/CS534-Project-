@@ -105,7 +105,7 @@ def recursiveDfs(problem, state, dir, visited):
         sta.push(str)
         return sta
 
-    if visited.has_key(state):
+    if state in visited:
         return sta
 
     for newLocation in problem.getSuccessors(state):
