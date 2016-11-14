@@ -149,7 +149,7 @@ class bfs_node:
        if(self.pred!=None and self.pred.action != None):
            solution += self.pred.Solution()
        return solution
-'''
+
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     currentstate = problem.getStartState()
@@ -160,34 +160,8 @@ def breadthFirstSearch(problem):
     closed = []
     while len(open) != 0:
         n = open.pop(0)
-        closed.append(n.state)
-        successors = map(lambda x: bfs_node(x[0], x[1], n), problem.getSuccessors(n.state))
-        print successors
-        for suc in successors:
-            if suc.state not in closed:
-                if problem.isGoalState(suc.state):
-                    path = suc.Solution()
-                    path.reverse()
-                    print path
-                    return path
-
-                open.append(suc)
-    return
-'''
-
-def breadthFirstSearch(problem):
-    """Search the shallowest nodes in the search tree first."""
-    sta = util.Stack()
-    sta.__init__()
-    startState = problem.getStartState()
-
-    currentnode = bfs_node(startState)
-    if problem.isGoalState(problem.getStartState()):
-        return []
-    sta.push(currentnode)
-    closed = []
-    while not sta.isEmpty():
-        n = sta.pop()
+        if n.state in closed:
+            continue
         closed.append(n.state)
         successors = map(lambda x: bfs_node(x[0], x[1], n), problem.getSuccessors(n.state))
         #print successors
@@ -199,7 +173,7 @@ def breadthFirstSearch(problem):
                     #print path
                     return path
 
-                sta.push(suc)
+                open.append(suc)
     return
 
 def uniformCostSearch(problem):
@@ -215,7 +189,7 @@ def nullHeuristic(state, problem=None):
     return 0
 
 class node:
-    def __init__(self, state, h, g, action = None, pred = None):
+    def __init__(self, state, h, g, action=None, pred=None):
         self.state = state
         self.pred = pred
         self.action = action
@@ -224,11 +198,11 @@ class node:
 
     def Solution(self):
         solution = [self.action]
-        if(self.pred != None and self.pred.action != None):
+        if (self.pred != None and self.pred.action != None):
             solution += self.pred.Solution()
         return solution
 
-#def manhattanHeuristic(position, problem, info={}):
+# def manhattanHeuristic(position, problem, info={}):
 #    "The Manhattan distance heuristic for a PositionSearchProblem"
 #    xy1 = position
 #    xy2 = problem.goal
@@ -245,6 +219,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
         if (frontier.isEmpty()):
             return []  # failure
         curr_node = frontier.pop()
+        # print curr_node.h
         if (problem.isGoalState(curr_node.state[0])):
             ans_list = curr_node.Solution()
             ans_list.reverse()
@@ -253,28 +228,12 @@ def aStarSearch(problem, heuristic=nullHeuristic):
             if (suc[0] in explored):
                 continue
             explored.append(suc[0])
+            # print explored
             suc_node = node(suc, heuristic(suc[0], problem), suc[2] + curr_node.g, suc[1], curr_node)
-            if(update_frontier(frontier, suc_node)):
-                frontier.push(suc_node)
+            frontier.push(suc_node)
+            # frontier.update(suc_node,suc_node.g + suc_node.h) ## update vs push?
 
-
-
-def update_frontier(frontier, node):
-    frontier_list = frontier.heap
-    state = node.state[0]
-    f = node.h+node.g
-    for heap_obj in frontier_list:
-        old_node = heap_obj[2]
-        old_state = old_node.state[0]
-        old_f = old_node.h + old_node.g
-        if old_state == state:
-            if f < old_f:
-                del frontier[old_node]
-                return True
-            else:
-                return False
-    return True
-
+            # write new function to check if in heap.state[0]?
 
 """  old Astar:
     while True:
