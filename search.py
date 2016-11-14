@@ -149,7 +149,8 @@ class bfs_node:
        if(self.pred!=None and self.pred.action != None):
            solution += self.pred.Solution()
        return solution
-'''
+
+
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     currentstate = problem.getStartState()
@@ -160,34 +161,8 @@ def breadthFirstSearch(problem):
     closed = []
     while len(open) != 0:
         n = open.pop(0)
-        closed.append(n.state)
-        successors = map(lambda x: bfs_node(x[0], x[1], n), problem.getSuccessors(n.state))
-        print successors
-        for suc in successors:
-            if suc.state not in closed:
-                if problem.isGoalState(suc.state):
-                    path = suc.Solution()
-                    path.reverse()
-                    print path
-                    return path
-
-                open.append(suc)
-    return
-'''
-
-def breadthFirstSearch(problem):
-    """Search the shallowest nodes in the search tree first."""
-    sta = util.Stack()
-    sta.__init__()
-    startState = problem.getStartState()
-
-    currentnode = bfs_node(startState)
-    if problem.isGoalState(problem.getStartState()):
-        return []
-    sta.push(currentnode)
-    closed = []
-    while not sta.isEmpty():
-        n = sta.pop()
+        if n.state in closed:
+            continue
         closed.append(n.state)
         successors = map(lambda x: bfs_node(x[0], x[1], n), problem.getSuccessors(n.state))
         #print successors
@@ -199,7 +174,7 @@ def breadthFirstSearch(problem):
                     #print path
                     return path
 
-                sta.push(suc)
+                open.append(suc)
     return
 
 def uniformCostSearch(problem):
