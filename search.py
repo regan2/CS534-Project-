@@ -190,12 +190,13 @@ def nullHeuristic(state, problem=None):
     return 0
 
 class node:
-    def __init__(self, state, h, g, action = None, pred = None):
+    def __init__(self, state, h, g, action = None, pred = None, f = 0):
         self.state = state
         self.pred = pred
         self.action = action
         self.g = g
         self.h = h
+        self.f = f
 
     def Solution(self):
         solution = [self.action]
@@ -267,6 +268,69 @@ def update_frontier(frontier, node):
             elif(is_in_queue(child.state,frontier)):
                 check_and_replace(child,frontier)
 """
+
+class rtanode:
+    def __init__(self, state, h, g, action = None, pred = None, f = 0):
+        self.state = state
+        self.pred = pred
+        self.action = action
+        self.g = g
+        self.h = h
+        self.f = f
+
+    def Solution(self):
+        solution = [self.action]
+        if(self.pred != None and self.pred.action != None):
+            solution += self.pred.Solution()
+        return solution
+
+
+def rtaStarSearch(problem, heuristic=nullHeuristic):
+    """Search the node that has the lowest combined cost and heuristic first."""
+    actions = []
+    curr_node = rtanode((problem.getStartState(), None, None), heuristic(problem.getStartState(), problem), 0)
+    explored = []
+    explored_nodes = []
+    while True:
+        if (problem.isGoalState(curr_node.state[0])):
+            ans_list = curr_node.Solution()
+            ans_list.reverse()
+            return ans_list
+        suc_list = []
+        for suc in problem.getSuccessors(curr_node.state[0]):
+            if (suc[0] in explored):
+                #print(suc[0])
+                suc_node = get_explored_node(explored_nodes, suc[0])
+                #print(suc_node.h)
+                suc_list.append(suc_node)
+            else:
+                explored.append(suc[0])
+                suc_node = rtanode(suc, heuristic(suc[0], problem), suc[2] + curr_node.g, suc[1], curr_node, f=suc[2] + heuristic(suc[0], problem))
+                explored_nodes.append(suc_node)
+                suc_list.append(suc_node)
+        f_min = 100000
+        f_sec = 100000
+        min_node = None
+        for node in suc_list:
+            if node.f < f_min:
+                min_node = node
+                f_min = node.f
+        for node in suc_list:
+            if node.f > f_min and node.f < f_sec:
+                f_sec = node.f
+        if f_sec < 100000:
+            print(f_sec)
+            curr_node.h = f_sec
+        curr_node = min_node
+        print explored
+
+
+def get_explored_node(explored_nodes, state):
+    for node in explored_nodes:
+        if node.state[0] == state:
+            return node
+    return None
+
 
 # Abbreviations
 bfs = breadthFirstSearch
