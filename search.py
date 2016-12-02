@@ -251,6 +251,28 @@ def update_frontier(frontier, node):
                 return False
     return True
 
+def weightedAStarSearch(problem, heuristic = nullHeuristic):
+    w = 4
+    actions = []
+    frontier = util.PriorityQueueWithFunction(lambda x: w*x.h + x.g)
+    curr_state = node((problem.getStartState(), None, None), w*heuristic(problem.getStartState(), problem), 0)
+    frontier.push(curr_state)
+    explored = []
+    while True:
+        if (frontier.isEmpty()):
+            return []  # failure
+        curr_node = frontier.pop()
+        if (problem.isGoalState(curr_node.state[0])):
+            ans_list = curr_node.Solution()
+            ans_list.reverse()
+            return ans_list
+        for suc in problem.getSuccessors(curr_node.state[0]):
+            if (suc[0] in explored):
+                continue
+            explored.append(suc[0])
+            suc_node = node(suc, w*heuristic(suc[0], problem), suc[2] + curr_node.g, suc[1], curr_node)
+            if(update_frontier(frontier, suc_node)):
+                frontier.push(suc_node)
 
 """  old Astar:
     while True:
