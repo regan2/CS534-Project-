@@ -40,6 +40,11 @@ from game import Actions
 import util
 import time
 import search
+import inspect
+import Queue
+import math
+
+#import numpy
 
 class GoWestAgent(Agent):
     "An agent that goes West until it can't."
@@ -255,6 +260,74 @@ def manhattanHeuristic(position, problem, info={}):
     xy1 = position
     xy2 = problem.goal
     return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
+
+def line_dist(city1,city2):
+    return math.sqrt((city1[0]-city2[0])**2+(city1[1]-city2[1])**2)
+
+class mst_node:
+    def __init__(self, loc, key=1000, pred=None):
+        self.loc = loc
+        self.key = key
+        self.pred = pred
+    def __cmp__(self, other):
+        return cmp(self.key,other.key)
+
+def MST_Prim(G,r):
+    # from "Introduction to Algorithms 3rd Ed." pg 634
+    V = []
+    for u in G:
+        if u==r:
+            V.append(mst_node(u,key=0))
+        else:
+            V.append(mst_node(u))
+    Q = Queue.PriorityQueue()
+    for u in V:
+        Q.put(u)
+    while (not Q.empty()):
+        u = Q.get()
+        # assume we check all other unexplored cities, no defined edges
+        with Q.mutex:
+            for v in Q.queue:
+                if(line_dist(u.loc,v.loc)<v.key):
+                    v.pred = u
+                    v.key = line_dist(u.loc,v.loc)      
+    return V
+
+def mapHeuristic(state, problem):
+    pacman_pos = state[0]
+    pellet_locs = state[1].data
+    pellet_locs_grid = []
+    #print pacman_pos
+    #print pellet_locs
+    # get distance to nearest true
+    # first get locations of all trues
+    for i in xrange(0,len(pellet_locs)):
+        for j in xrange(0,len(pellet_locs[0])):
+            if pellet_locs[i][j] == 1:
+                pellet_locs_grid.append((i,j))
+
+    #print pellet_locs_grid
+    min_dist = state[1].height + state[1].width
+    min_loc = pacman_pos
+    for loc in pellet_locs_grid:
+        curr_dist = abs(loc[0] - pacman_pos[0]) + abs(loc[1] - pacman_pos[1])
+        if curr_dist < min_dist:
+            min_dist = curr_dist 
+            min_loc = loc
+
+    if(min_loc != pacman_pos):
+        nearest_city = pellet_locs_grid[pellet_locs_grid.index(min_loc)]
+
+        unexplored_mst = MST_Prim(pellet_locs_grid, nearest_city)
+        h = min_dist
+        for x in unexplored_mst:
+            h += x.key
+
+        return h
+    else:
+        return 0
+
+    #print inspect.getmembers(pellet_locs)
 
 def euclideanHeuristic(position, problem, info={}):
     "The Euclidean distance heuristic for a PositionSearchProblem"
