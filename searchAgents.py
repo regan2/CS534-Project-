@@ -262,7 +262,7 @@ def manhattanHeuristic(position, problem, info={}):
     return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
 
 def line_dist(city1,city2):
-    return math.sqrt((city1[0]-city2[0])**2+(city1[1]-city2[1])**2)
+    return abs(city1[0]-city2[0])+abs(city1[1]-city2[1])
 
 class mst_node:
     def __init__(self, loc, key=1000, pred=None):
