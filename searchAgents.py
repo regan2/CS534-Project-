@@ -261,8 +261,8 @@ def manhattanHeuristic(position, problem, info={}):
     xy2 = problem.goal
     return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
 
-def line_dist(city1,city2):
-    return abs(city1[0]-city2[0])+abs(city1[1]-city2[1])
+def line_dist(loc1,loc2):
+    return abs(loc1[0]-loc2[0])+abs(loc1[1]-loc2[1])
 
 class mst_node:
     def __init__(self, loc, key=1000, pred=None):

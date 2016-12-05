@@ -297,23 +297,6 @@ def weightedAStarSearch(problem, heuristic = nullHeuristic):
             if(update_frontier(frontier, suc_node)):
                 frontier.push(suc_node)
 
-"""  old Astar:
-    while True:
-        if(frontier.empty()):
-            return failure
-        curr_node = frontier.get()
-        if (curr_node.state==problem.goal):
-            return curr_node.Solution()
-        # take the list of possible states and costs rather than actions, but basically same thing
-        for w in problem.actions(curr_node.state):
-            [new_state,cost] = [w[0], w[1]]
-            child = curr_node.Child_node(new_state,cost)
-            if(child.state not in explored and not is_in_queue(child.state,frontier)):
-                frontier.put(child)
-            elif(is_in_queue(child.state,frontier)):
-                check_and_replace(child,frontier)
-"""
-
 class rtanode:
     def __init__(self, state, h, g, action = None, pred = None, f = 0):
         self.state = state
